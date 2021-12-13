@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Search from "./Search";
 import {
   Table,
@@ -14,34 +14,25 @@ import {
 } from "@chakra-ui/react";
 import Navbar from "./Navbar";
 import helper from "../helpers/helper";
+import { useSelector, useDispatch } from "react-redux";
 
 function DataTable() {
-  const [data, updateData] = useState([]);
-  const [limit, setLimit] = useState(10);
-  const [currentPage, updatePage] = useState(0);
-  const [maxResults, updateMax] = useState(0);
-  const [lastQuery, updateLastQuery] = useState("");
+  const data = useSelector((state) => state.tableReducer.data);
+  const limit = useSelector((state) => state.tableReducer.limit);
+  const currentPage = useSelector((state) => state.tableReducer.page);
+  const lastQuery = useSelector((state) => state.tableReducer.lastQuery);
+  const maxResults = useSelector((state) => state.tableReducer.max);
+
+  const dispatch = useDispatch();
 
   const apiCall = async (query) => {
-    await helper.getDataFromApiAndSetState(
-      query,
-      updateData,
-      updateMax,
-      updatePage,
-      updateLastQuery
-    );
+    await helper.getDataFromApiAndSetState(query, dispatch);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       const query = `${process.env.REACT_APP_API_BASE_URL}/getData?page=1&limit=${limit}`;
-      await helper.getDataFromApiAndSetState(
-        query,
-        updateData,
-        updateMax,
-        updatePage,
-        updateLastQuery
-      );
+      await helper.getDataFromApiAndSetState(query, dispatch);
     };
     fetchData();
   }, []);
@@ -73,13 +64,7 @@ function DataTable() {
       <Container maxW="container.xl">
         <Box>
           <Box marginTop="50px" paddingBottom="22px">
-            <Search
-              updateData={updateData}
-              updateMax={updateMax}
-              updatePage={updatePage}
-              limit={limit}
-              updateLastQuery={updateLastQuery}
-            />
+            <Search />
           </Box>
           <Table variant="simple" borderWidth="1px">
             <Thead bg="rgb(226, 232, 240)">

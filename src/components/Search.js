@@ -4,22 +4,19 @@ import { Select } from "@chakra-ui/react";
 import { Box, HStack } from "@chakra-ui/react";
 import { FormControl } from "@chakra-ui/react";
 import helper from "../helpers/helper";
+import { useSelector, useDispatch } from "react-redux";
 
 function Search(props) {
-  const { updateData, updateMax, updatePage, limit, updateLastQuery } = props;
+  const dispatch = useDispatch();
 
   const [countryList, updateCountryList] = useState([]);
   const [nameFilter, updateNameFilter] = useState("");
   const [countryFilter, updateCountryFilter] = useState("");
 
+  const limit = useSelector((state) => state.tableReducer.limit);
+
   const apiCall = async (query) => {
-    await helper.getDataFromApiAndSetState(
-      query,
-      updateData,
-      updateMax,
-      updatePage,
-      updateLastQuery
-    );
+    await helper.getDataFromApiAndSetState(query, dispatch);
   };
 
   useEffect(() => {

@@ -1,10 +1,4 @@
-exports.getDataFromApiAndSetState = async (
-  url,
-  updateData,
-  updateMax,
-  updatePage,
-  updateLastQuery
-) => {
+const getDataFromApiAndSetState = async (url, dispatch) => {
   try {
     const token = localStorage.getItem("token");
     const headers = new Headers();
@@ -17,18 +11,40 @@ exports.getDataFromApiAndSetState = async (
 
     if (response.status === 200) {
       const dataFromDb = await response.json();
-      updateData(dataFromDb.results);
-      updateMax(dataFromDb.max);
-      updatePage(dataFromDb.page);
+      dispatch({
+        type: "UPDATE_DATA",
+        payload: {
+          data: dataFromDb.results,
+        },
+      });
+
+      dispatch({
+        type: "UPDATE_MAX",
+        payload: {
+          max: dataFromDb.max,
+        },
+      });
+
+      dispatch({
+        type: "UPDATE_PAGE",
+        payload: {
+          page: dataFromDb.page,
+        },
+      });
     }
 
-    updateLastQuery(url.split("?")[0]);
+    dispatch({
+      type: "UPDATE_LAST_QUERY",
+      payload: {
+        lastQuery: url.split("?")[0],
+      },
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
-exports.getDataFromApi = async (url) => {
+const getDataFromApi = async (url) => {
   try {
     const token = localStorage.getItem("token");
     const headers = new Headers();
@@ -43,3 +59,9 @@ exports.getDataFromApi = async (url) => {
     console.log(error);
   }
 };
+
+const helper = {
+  getDataFromApi: getDataFromApi,
+  getDataFromApiAndSetState: getDataFromApiAndSetState,
+};
+export default helper;
