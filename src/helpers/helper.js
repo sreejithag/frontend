@@ -60,8 +60,27 @@ const getDataFromApi = async (url) => {
   }
 };
 
+const getSuggestions = async (phrase) => {
+  try {
+    const token = localStorage.getItem("token");
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${token}`);
+
+    const url = `${process.env.REACT_APP_API_BASE_URL}/getSuggestion/${phrase}`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: token !== null && token !== "" ? headers : undefined,
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const helper = {
   getDataFromApi: getDataFromApi,
   getDataFromApiAndSetState: getDataFromApiAndSetState,
+  getSuggestions: getSuggestions,
 };
 export default helper;

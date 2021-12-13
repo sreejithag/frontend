@@ -12,11 +12,20 @@ function Search(props) {
   const [countryList, updateCountryList] = useState([]);
   const [nameFilter, updateNameFilter] = useState("");
   const [countryFilter, updateCountryFilter] = useState("");
+  const [nameSuggestion, updateNameSuggestion] = useState([]);
 
   const limit = useSelector((state) => state.tableReducer.limit);
 
   const apiCall = async (query) => {
     await helper.getDataFromApiAndSetState(query, dispatch);
+  };
+
+  const getSuggestionsAndSetState = async (phrase) => {
+    const response = await helper.getSuggestions(phrase);
+    if (response.status === 200) {
+      const suggestions = await response.json();
+      updateNameSuggestion(suggestions);
+    }
   };
 
   useEffect(() => {
@@ -46,6 +55,7 @@ function Search(props) {
       }
 
       updateNameFilter(name);
+      getSuggestionsAndSetState(name);
 
       const query =
         countryFilter === "" || countryFilter === undefined
@@ -83,8 +93,16 @@ function Search(props) {
           <Input
             type="search"
             placeholder="Filter by name"
+            id="search"
+            list="suggestions"
             onChange={filterByName}
           />
+          <datalist id="suggestions">
+            {nameSuggestion.map((suggest, index) => {
+              return <option key={index} value={suggest} />;
+            })}
+          </datalist>
+
           <Select placeholder="filter by country" onChange={filterByCountry}>
             {options}
           </Select>
